@@ -1,0 +1,20 @@
+{
+    "name" : "",
+    "appid" : "wx4ca43a4bd45566da",
+    "description" : "",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    "mp-weixin" : {
+        "appid" : "wx4ca43a4bd45566da",
+        "setting" : {
+            "urlCheck" : false
+        },
+        "usingComponents" : true,
+        "plugins" : {
+        },
+        "functionalPages" : {
+            "independent" : true
+        }
+    }
+}

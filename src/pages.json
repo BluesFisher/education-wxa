@@ -1,0 +1,93 @@
+{
+    "pages": [
+        {
+            "path": "pages/index/index",
+            "style": {
+                "mp-weixin": {},
+                "navigationBarBackgroundColor": "#4d88ff",
+                "navigationBarTextStyle": "white",
+                "enablePullDownRefresh": false,
+                "disableScroll": true
+            }
+        },
+        {
+            "path": "pages/news/index",
+            "style": {
+                "mp-weixin": {},
+                "navigationBarBackgroundColor": "#4d88ff",
+                "navigationBarTextStyle": "white",
+                "disableScroll": true
+            }
+        },
+        {
+            "path": "pages/school/index",
+            "style": {
+                "mp-weixin": {},
+                "navigationBarBackgroundColor": "#4d88ff",
+                "navigationBarTextStyle": "white"
+            }
+        },
+        {
+            "path": "pages/user/index",
+            "style": {
+                "mp-weixin": {},
+                "navigationBarBackgroundColor": "#4d88ff",
+                "navigationBarTextStyle": "white",
+                "disableScroll": true
+            }
+        },
+        {
+            "path": "pages/userInfo/index",
+            "style": {
+                "mp-weixin": {},
+                "navigationBarBackgroundColor": "#4d88ff",
+                "navigationBarTextStyle": "white",
+                "disableScroll": true
+            }
+        },
+        {
+            "path": "pages/profession/index",
+            "style": {
+                "mp-weixin": {},
+                "navigationBarBackgroundColor": "#4d88ff",
+                "navigationBarTextStyle": "white"
+            }
+        },
+        {
+            "path": "pages/webview",
+            "style": {
+                "mp-weixin": {},
+                "navigationBarBackgroundColor": "#4d88ff",
+                "navigationBarTextStyle": "white",
+                "disableScroll": true
+            }
+        }
+    ],
+    "tabBar": {
+        "selectedColor": "#4d88ff",
+        "backgroundColor": "#fff",
+        "color": "#babec1",
+        "position": "bottom",
+        "borderStyle": "black",
+        "list": [
+            {
+                "pagePath": "pages/index/index",
+                "text": "首页",
+                "iconPath": "static/images/common/home2.png",
+                "selectedIconPath": "static/images/common/home2-select.png"
+            },
+            {
+                "pagePath": "pages/user/index",
+                "text": "我的",
+                "iconPath": "static/images/common/user2.png",
+                "selectedIconPath": "static/images/common/user2-select.png"
+            }
+        ]
+    },
+    "globalStyle": {
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "服务平台",
+        "navigationBarBackgroundColor": "#F8F8F8",
+        "backgroundColor": "#F8F8F8"
+    }
+}

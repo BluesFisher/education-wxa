@@ -1,0 +1,53 @@
+.profession-info-detail {
+    .profession-info-item {
+        display: flex;
+        font-size: 26rpx;
+        margin-top: 10rpx;
+
+        .profession-info-label {
+            color: #aaa;
+            min-width: 180rpx;
+        }
+    }
+}
+
+.profession-title {
+    .base-title {
+        display: block;
+    }
+
+}
+
+.profession-tag {
+    font-size: 24rpx;
+    display: flex;
+    font-weight: normal;
+    margin-top: 6rpx;
+}
+
+.profession-detail {
+    .base-title {
+        font-size: 30rpx;
+        position: relative;
+        display: inline-block;
+
+
+        &::before {
+            content: '';
+            width: 100%;
+            height: 20rpx;
+            background: rgba(87, 191, 252, .3);
+            position: absolute;
+            border-radius: 6rpx;
+            left: 8rpx;
+            bottom: -2rpx;
+        }
+    }
+
+    .profession-detail-value {
+        font-size: 26rpx;
+        display: block;
+
+    }
+
+}

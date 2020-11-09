@@ -1,0 +1,98 @@
+@import '@/static/style/common.scss';
+
+.user-center {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    // padding: 0 20rpx 20rpx 20rpx;
+    background: #fff;
+
+    .user-detail-header {
+        display: flex;
+        align-self: center;
+        position: relative;
+        width: 100%;
+        padding: 40rpx;
+        background: #4d88ff;
+        color: #fff;
+        align-items: center;
+        height: 200rpx;
+        box-sizing: border-box;
+
+        .user-icon {
+            height: 120rpx;
+            width: 120rpx;
+            border-radius: 50%;
+            margin-right: 30rpx;
+            border: 4rpx solid #fff;
+        }
+
+        .user-detail-info {
+            .user-level {
+                font-size: 24rpx;
+                background: #f7b12f;
+                border: 1rpx solid #fff;
+                border-radius: 28rpx;
+                display: inline-block;
+                padding: 4rpx 14rpx;
+                line-height: 24rpx;
+            }
+        }
+
+        .user-config {
+            position: absolute;
+            height: 30rpx;
+            width: 30rpx;
+            right: 40rpx;
+            transform: rotate(180deg);
+        }
+    }
+
+    .login-btn {
+        background: transparent;
+        border-radius: 0;
+        font-size: 26rpx;
+        line-height: 28rpx;
+        color: #ffffff;
+        text-align: center;
+        border: none;
+        margin: 0;
+        padding: 0;
+
+        &::after {
+            border: none;
+        }
+    }
+
+    .user-base-operate {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 30rpx 0rpx;
+    }
+
+    .user-base-operate {
+        border-bottom: 14rpx solid rgba(241, 241, 241, 0.4);
+
+        .base-operate-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-right: 1rpx solid #eee;
+            flex: 1;
+
+            &:last-child {
+                border-right: none;
+            }
+
+            .base-operate-label {
+                font-size: 28rpx;
+                color: #bbb;
+            }
+
+            .base-operate-value {
+                font-size: 34rpx;
+            }
+        }
+    }
+}
