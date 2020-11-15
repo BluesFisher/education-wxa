@@ -6,6 +6,6 @@ module.exports = {
     env: ENV,
     platform: PLATFORM,
     appId: 'wx4ca43a4bd45566da',
-    baseUrl: 'https://www.yuqi.blue/api', //'http://localhost:3000', https://www.yuqi.blue/api
+    baseUrl: ENV === 'test' ? 'http://localhost:3000' : 'https://www.yuqi.blue/api', //'http://localhost:3000', https://www.yuqi.blue/api
     barTitle: '服务平台'
 }

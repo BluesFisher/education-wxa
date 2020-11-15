@@ -21,8 +21,6 @@
             <Tabs @tabClick="tabClick" ref="tabs" />
         </view>
 
-        <!-- <view class="inform-btn" @click="getCode">获取code</view> -->
-
         <view class="page-section">
             <swiper
                 class="swiper"
@@ -93,34 +91,26 @@ import InfoList from '@/components/InfoList'
 import MAIN_BACK from '@/static/images/main/main-back.png'
 
 const R = require('ramda')
-const MONTH = {
-    1: 'JAN',
-    2: 'FEB',
-    3: 'MAR',
-    4: 'APR',
-    5: 'MAY',
-    6: 'JUN',
-    7: 'JUL',
-    8: 'AUG',
-    9: 'SEPT',
-    10: 'OCT',
-    11: 'NOV',
-    12: 'DEC'
-}
-const EXAM_DATE = '2021-07-16'
-const SCENTENCE = [
-    '生活明朗，万物可爱',
-    '青春如梦，岁月如花',
-    '走过的路，就会留下痕迹',
-    '青春，一半明媚，一半忧伤',
-    '青春，是人生最美丽的季节',
-    '世界偶尔薄情，愿你一如既往深情'
-]
+// const MONTH = {
+//     1: 'JAN',
+//     2: 'FEB',
+//     3: 'MAR',
+//     4: 'APR',
+//     5: 'MAY',
+//     6: 'JUN',
+//     7: 'JUL',
+//     8: 'AUG',
+//     9: 'SEPT',
+//     10: 'OCT',
+//     11: 'NOV',
+//     12: 'DEC'
+// }
+const DEFAULT_SCENTENCE = '生活明朗，万物可爱'
 
-let touchDotX = 0 //X按下时坐标
-let touchDotY = 0 //y按下时坐标
-let interval //计时器
-let time = 0 //从按下到松开共多少时间*100
+// let touchDotX = 0 //X按下时坐标
+// let touchDotY = 0 //y按下时坐标
+// let interval //计时器
+// let time = 0 //从按下到松开共多少时间*100
 
 const ARTICLE_LIST = [
     {
@@ -304,20 +294,21 @@ export default {
     },
     mixins: [pageMixin],
     data() {
-        const diffDay = dayjs(EXAM_DATE).diff(dayjs(), 'day')
         return {
             MAIN_BACK,
-            mainTitle: `生活明朗，万物可爱`,
-            diffDay: `--距离高考还有${diffDay}天--`,
-            MONTH,
+            mainTitle: DEFAULT_SCENTENCE,
+            diffDay: `--距离高考的时间不多了--`,
+            examScentence: [],
             indicatorDots: false,
             autoplay: false,
             duration: 500,
             swiperCurrent: 0,
-            date: dayjs(),
-            animationData: {},
-            animationTimer: null,
-            mainTopShow: true,
+
+            // MONTH,
+            // date: dayjs(),
+            // animationData: {},
+            // animationTimer: null,
+            // mainTopShow: true,
 
             updateTimer: null,
 
@@ -335,52 +326,66 @@ export default {
         }
     },
     async onLoad() {
-        const res = await apiReq('/user/setUserInfo', {
-            userName: 'yuzhen',
-            sex: '0',
-            phone: '13612817761'
-        })
-
-        console.log('-------', res)
+        await this.getUserInfo()
+        this.getExamInfo()
+        // const res = await apiReq('/user/setUserInfo', {
+        //     userName: 'yuzhen',
+        //     sex: '0',
+        //     phone: '13612817761'
+        // })
     },
     onShow() {
-        const animation = uni.createAnimation({
-            duration: 300,
-            timingFunction: 'ease-out'
-        })
-
-        this.animation = animation
-        this.hideMainTips()
+        // const animation = uni.createAnimation({
+        //     duration: 300,
+        //     timingFunction: 'ease-out'
+        // })
+        // this.animation = animation
+        // this.hideMainTips()
     },
     onHide() {
-        this.animationTimer && clearTimeout(this.animationTimer)
+        // this.animationTimer && clearTimeout(this.animationTimer)
         this.updateTimer && clearTimeout(this.updateTimer)
-        interval && clearInterval(interval)
+        // interval && clearInterval(interval)
     },
     methods: {
-        hideMainTips(timeout = 3000) {
-            this.animationTimer && clearTimeout(this.animationTimer)
-            this.animationTimer = setTimeout(() => {
-                this.mainTopShow = false
-                this.animation
-                    .height(0)
-                    .opacity(0)
-                    .step()
-                this.animationData = this.animation.export()
-            }, timeout)
-        },
-        showMainTips() {
-            if (this.mainTopShow) {
-                this.hideMainTips(0)
-                return
+        async getUserInfo() {
+            const { res } = await wxFunc('getUserInfo')
+            if (res.userInfo) {
+                this.$store.dispatch('setBaseInfo', res.userInfo)
             }
-            this.mainTopShow = true
-            this.mainTitle = SCENTENCE[Math.floor(Math.random() * SCENTENCE.length)]
-            this.animation
-                .height('300rpx')
-                .opacity(1)
-                .step()
-            this.animationData = this.animation.export()
+        },
+        async getExamInfo() {
+            const { code, data } = await apiReq('/exam/getExamBaseInfo')
+            if (code === 0 && data) {
+                const diffDay = dayjs(data.examDate || dayjs()).diff(dayjs(), 'day')
+                this.diffDay = `--距离高考还有${diffDay}天--`
+                this.examScentence = data.examScentence || []
+            }
+        },
+        // hideMainTips(timeout = 3000) {
+        //     this.animationTimer && clearTimeout(this.animationTimer)
+        //     this.animationTimer = setTimeout(() => {
+        //         this.mainTopShow = false
+        //         this.animation
+        //             .height(0)
+        //             .opacity(0)
+        //             .step()
+        //         this.animationData = this.animation.export()
+        //     }, timeout)
+        // },
+        showMainTips() {
+            // if (this.mainTopShow) {
+            //     this.hideMainTips(0)
+            //     return
+            // }
+            // this.mainTopShow = true
+            this.mainTitle =
+                this.examScentence[Math.floor(Math.random() * this.examScentence.length)] || DEFAULT_SCENTENCE
+            // this.animation
+            //     .height('300rpx')
+            //     .opacity(1)
+            //     .step()
+            // this.animationData = this.animation.export()
         },
         updateNewsList(type) {
             this.updateTimer && clearTimeout(this.updateTimer)
@@ -434,15 +439,6 @@ export default {
                 }
             }, 1000)
         },
-        async getCode() {
-            try {
-                const { res } = await wxFunc('login')
-                console.log('wxLogin', res)
-                return ''
-            } catch (e) {
-                console.log('登录失败！' + JSON.stringify(e))
-            }
-        },
         tabClick({ item, index }) {
             // console.log('tabClick: ', { item, index })
             this.$scope.setData({
@@ -457,41 +453,40 @@ export default {
         },
         // 触摸开始事件
         touchStart(e) {
-            touchDotX = e.touches[0].pageX // 获取触摸时的原点
-            touchDotY = e.touches[0].pageY
-            // 使用js计时器记录时间
-            interval = setInterval(() => {
-                time++
-            }, 100)
+            // touchDotX = e.touches[0].pageX // 获取触摸时的原点
+            // touchDotY = e.touches[0].pageY
+            // // 使用js计时器记录时间
+            // interval = setInterval(() => {
+            //     time++
+            // }, 100)
         },
         // 触摸结束事件
         touchEnd(e) {
-            let touchMoveX = e.changedTouches[0].pageX
-            let touchMoveY = e.changedTouches[0].pageY
-            let tmX = touchMoveX - touchDotX
-            let tmY = touchMoveY - touchDotY
-            if (time < 20) {
-                let absX = Math.abs(tmX)
-                let absY = Math.abs(tmY)
-                if (absX > 2 * absY) {
-                    if (tmX < 0) {
-                        console.log('左滑=====')
-                    } else {
-                        console.log('右滑=====')
-                    }
-                }
-                if (absY > absX * 2 && tmY < 0) {
-                    console.log('上滑动=====')
-                    this.hideMainTips(0)
-                }
-
-                if (tmY > 300) {
-                    console.log('下滑动=====')
-                    // this.showMainTips(0)
-                }
-            }
-            interval && clearInterval(interval) // 清除setInterval
-            time = 0
+            // let touchMoveX = e.changedTouches[0].pageX
+            // let touchMoveY = e.changedTouches[0].pageY
+            // let tmX = touchMoveX - touchDotX
+            // let tmY = touchMoveY - touchDotY
+            // if (time < 20) {
+            //     let absX = Math.abs(tmX)
+            //     let absY = Math.abs(tmY)
+            //     if (absX > 2 * absY) {
+            //         if (tmX < 0) {
+            //             console.log('左滑=====')
+            //         } else {
+            //             console.log('右滑=====')
+            //         }
+            //     }
+            //     if (absY > absX * 2 && tmY < 0) {
+            //         console.log('上滑动=====')
+            //         this.hideMainTips(0)
+            //     }
+            //     if (tmY > 300) {
+            //         console.log('下滑动=====')
+            //         // this.showMainTips(0)
+            //     }
+            // }
+            // interval && clearInterval(interval) // 清除setInterval
+            // time = 0
         }
     }
 }

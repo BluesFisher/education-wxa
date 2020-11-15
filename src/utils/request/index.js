@@ -1,5 +1,6 @@
 import { appId, baseUrl } from '../../config/base'
 import { uuid, wxFunc } from '../util'
+import store from '../../store'
 import getCsrfToken from './getCsrfToken'
 const R = require('ramda')
 
@@ -78,7 +79,8 @@ export default async function apiReq(api, data) {
         const code = R.path(['res', 'code'], await wxFunc('login'))
 
         if (code) {
-            res = await _reqFunc({ header, api: '/user/getSid', data: { code } })
+            const { avatarUrl, gender, nickName } = store.state.baseInfo
+            res = await _reqFunc({ header, api: '/user/getSid', data: { code, avatarUrl, gender, nickName } })
 
             if (res.code === 0) {
                 uni.setStorageSync('jwt', R.path(['data', 'token'], res))
