@@ -79,7 +79,6 @@
 </template>
 
 <script>
-import apiReq from '../../utils/request/index'
 import pageMixin from '../../mixins/page'
 import { wxFunc } from '../../utils/util.js'
 import dayjs from 'dayjs'
@@ -326,13 +325,8 @@ export default {
         }
     },
     async onLoad() {
-        await this.getUserInfo()
+        await this.getWxUserInfo()
         this.getExamInfo()
-        // const res = await apiReq('/user/setUserInfo', {
-        //     userName: 'yuzhen',
-        //     sex: '0',
-        //     phone: '13612817761'
-        // })
     },
     onShow() {
         // const animation = uni.createAnimation({
@@ -348,14 +342,20 @@ export default {
         // interval && clearInterval(interval)
     },
     methods: {
-        async getUserInfo() {
+        async getWxUserInfo() {
             const { res } = await wxFunc('getUserInfo')
             if (res.userInfo) {
-                this.$store.dispatch('setBaseInfo', res.userInfo)
+                const { avatarUrl, gender, nickName } = res.userInfo
+                this.$store.dispatch('setBaseInfo', {
+                    ...res.userInfo,
+                    photo: avatarUrl,
+                    sex: `${gender}`,
+                    userName: nickName
+                })
             }
         },
         async getExamInfo() {
-            const { code, data } = await apiReq('/exam/getExamBaseInfo')
+            const { code, data } = await this.apiReq('/exam/getExamBaseInfo')
             if (code === 0 && data) {
                 const diffDay = dayjs(data.examDate || dayjs()).diff(dayjs(), 'day')
                 this.diffDay = `--距离高考还有${diffDay}天--`

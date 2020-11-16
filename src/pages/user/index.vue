@@ -1,6 +1,6 @@
 <template>
     <view class="page user-center">
-        <view class="user-detail-header" @click="goUserInfo" :style="{ background: themeColor }">
+        <view class="user-detail-header" @click="goUserInfoPage" :style="{ background: themeColor }">
             <image
                 mode="aspectFill"
                 class="user-icon"
@@ -11,7 +11,7 @@
             <button
                 class="login-btn"
                 v-if="!baseInfo || !baseInfo.nickName"
-                @getuserinfo="bindGetUserInfo"
+                @getuserinfo="bindGetWxUserInfo"
                 open-type="getUserInfo"
             >
                 登录/注册
@@ -126,28 +126,44 @@ export default {
             themeColor: ''
         }
     },
-    async onLoad() {},
+    async onLoad() {
+        this.getUserInfo()
+    },
     computed: {
         ...mapState({
             baseInfo: state => state.baseInfo || {}
         })
     },
     methods: {
-        async goUserInfo() {
+        async getUserInfo() {
+            const { code, data } = await this.apiReq('/user/getUserInfo')
+            console.log('getUserInfo', code, data)
+            if (code === 0 && data) {
+                this.$store.dispatch('setBaseInfo', data)
+            }
+        },
+        async goUserInfoPage() {
             if (!this.baseInfo || !this.baseInfo.nickName) return
 
             uni.navigateTo({
                 url: '/pages/userInfo/index'
             })
         },
-        async bindGetUserInfo(e) {
+        async bindGetWxUserInfo(e) {
             uni.showLoading({
                 title: '请稍后...'
             })
             const { rawData } = e.detail
 
             if (rawData && rawData !== JSON.stringify(this.baseInfo)) {
-                this.$store.dispatch('setBaseInfo', JSON.parse(rawData))
+                const userInfo = JSON.parse(rawData)
+                const { avatarUrl, gender, nickName } = userInfo
+                this.$store.dispatch('setBaseInfo', {
+                    ...userInfo,
+                    photo: avatarUrl,
+                    sex: `${gender}`,
+                    userName: nickName
+                })
 
                 await wxFunc('setStorage', {
                     key: 'rawData',

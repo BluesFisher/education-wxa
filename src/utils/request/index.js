@@ -79,8 +79,8 @@ export default async function apiReq(api, data) {
         const code = R.path(['res', 'code'], await wxFunc('login'))
 
         if (code) {
-            const { avatarUrl, gender, nickName } = store.state.baseInfo
-            res = await _reqFunc({ header, api: '/user/getSid', data: { code, avatarUrl, gender, nickName } })
+            const { photo, sex, userName } = store.state.baseInfo
+            res = await _reqFunc({ header, api: '/user/getSid', data: { code, photo, sex, userName } })
 
             if (res.code === 0) {
                 uni.setStorageSync('jwt', R.path(['data', 'token'], res))

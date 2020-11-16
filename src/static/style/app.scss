@@ -45,6 +45,7 @@ page {
         background: #3c45bf;
         border-radius: 10rpx;
         border: 1px solid #3c45bf;
+        margin: 0 auto;
 
         &.disabled {
             background: #f5f5f5;
@@ -79,7 +80,7 @@ page {
         justify-content: space-between;
         align-items: center;
         flex-direction: column;
-        padding-bottom: 30rpx;
+        margin-bottom: 30rpx;
         font-size: 28rpx;
         width: 100%;
 

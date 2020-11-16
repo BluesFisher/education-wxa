@@ -8,6 +8,7 @@
                     mode="date"
                     :value="item.value"
                     :end="nowDate"
+                    :disabled="!isModify"
                     @change="bindUserMenuChange($event, item, index)"
                 >
                     <text class="base-menu-value" :class="{ 'no-fill-data': !item.value }">{{
@@ -27,6 +28,7 @@
                     v-else-if="item.type === 'input'"
                     :placeholder="item.placeholder"
                     :value="item.value"
+                    :disabled="!isModify"
                     @input="bindUserMenuChange($event, item, index)"
                 />
 
@@ -36,10 +38,11 @@
                     @change="bindRegionChange($event, item, index)"
                     :value="region"
                     :custom-item="customItem"
+                    :disabled="!isModify"
                 >
-                    <text class="base-menu-value" :class="{ 'no-fill-data': !item.value }">{{
-                        item.value || item.placeholder
-                    }}</text>
+                    <text class="base-menu-value" :class="{ 'no-fill-data': !item.value }">
+                        {{ item.value || item.placeholder }}
+                    </text>
                 </picker>
 
                 <picker
@@ -47,24 +50,27 @@
                     @change="bindUserMenuChange(e, item, index)"
                     :range="item.range"
                     range-key="label"
+                    :disabled="!isModify"
                 >
-                    <text class="base-menu-value" :class="{ 'no-fill-data': !item.value }">{{
-                        item.value || item.placeholder
-                    }}</text>
+                    <text class="base-menu-value" :class="{ 'no-fill-data': !item.value }">
+                        {{ item.value || item.placeholder }}
+                    </text>
                 </picker>
 
-                <view v-else class="base-menu-value" :class="{ 'no-fill-data': !item.value }">{{
-                    item.value || item.placeholder
-                }}</view>
-                <view class="down-arrow menu-arrow"></view>
+                <view v-else class="base-menu-value" :class="{ 'no-fill-data': !item.value }">
+                    {{ item.value || item.placeholder }}
+                </view>
+                <view v-if="isModify" class="down-arrow menu-arrow"></view>
             </view>
         </view>
+        <view class="glb-btn-default modify-btn" @click="modifyClick">{{ isModify ? '保存' : '修改信息' }}</view>
     </view>
 </template>
 
 <style lang="scss" src="./index.scss"></style>
 
 <script>
+import pageMixin from '../../mixins/page'
 import { mapState, mapMutations } from 'vuex'
 import { GENDER_CODE } from '@/utils/globalConst'
 import { wxFunc } from '../../utils/util.js'
@@ -86,19 +92,20 @@ const USER_MENU = [
     {
         label: '头像',
         value: '',
+        code: 'photo',
         type: 'image'
     },
     {
         label: '昵称',
         value: '',
-        code: 'nickName',
+        code: 'userName',
         type: 'input',
         placeholder: '请输入'
     },
     {
         label: '性别',
         value: '',
-        code: 'gender',
+        code: 'sex',
         range: genderItems,
         type: 'pickerGender',
         placeholder: '请选择'
@@ -106,12 +113,14 @@ const USER_MENU = [
     {
         label: '所在地',
         value: '',
+        code: 'locate',
         type: 'pcikerRegion',
         placeholder: '请选择'
     },
     {
         label: '我的生日',
         value: '',
+        code: 'birthday',
         type: 'pickerDate',
         placeholder: '请选择'
     }
@@ -121,6 +130,7 @@ const NICK_NAME_INDEX = 1
 const GENDER_INDEX = 2
 
 export default {
+    mixins: [pageMixin],
     computed: {
         ...mapState({
             baseInfo: state => state.baseInfo || {}
@@ -134,18 +144,20 @@ export default {
                 .format('YYYY-MM-DD'),
 
             region: ['广东省', '深圳市', '南山区'],
-            customItem: '全部'
+            customItem: '全部',
+            isModify: false,
+            cacheUserInfo: {}
         }
     },
     mounted() {
-        console.log(this.baseInfo)
-
         this.userMenu[GENDER_INDEX].value = GENDER_CODE[+this.baseInfo.gender || 0]
         this.userMenu[NICK_NAME_INDEX].value = this.baseInfo.nickName
         this.userMenu[ICON_INDEX].value = this.baseInfo.avatarUrl
     },
     methods: {
         bindUserMenuChange(e, item, index) {
+            if (!this.isModify) return
+
             if (item.type === 'image') {
                 this.chooseUserIcon(e, item, index)
                 return
@@ -168,9 +180,11 @@ export default {
             }
         },
         bindRegionChange(e, item, index) {
+            if (!this.isModify) return
             this.userMenu[index].value = e.target.value.join(' ')
         },
         async chooseUserIcon(e, item, index) {
+            if (!this.isModify) return
             const { res } = await wxFunc('chooseImage', {
                 count: 1,
                 sizeType: ['original', 'compressed'],
@@ -182,6 +196,33 @@ export default {
 
             this.$store.dispatch('setBaseInfo', baseInfo)
             this.userMenu[index].value = tempFilePaths[0]
+        },
+        async modifyClick() {
+            if (!this.isModify) {
+                this.cacheUserInfo = this.userMenu.map(item => ({ [item.code]: item.value }))
+            } else {
+                let userInfoObj = {}
+                const aimUserInfo = this.userMenu.map(item => {
+                    userInfoObj[item.code] = item.value
+                    return { [item.code]: item.value }
+                })
+                if (JSON.stringify(this.cacheUserInfo) !== JSON.stringify(aimUserInfo)) {
+                    uni.showLoading({
+                        title: '更新中...'
+                    })
+                    const { code, data, msg } = await this.apiReq('/user/setUserInfo', userInfoObj)
+                    uni.hideLoading()
+
+                    if (code !== 0) {
+                        uni.showToast({
+                            title: `修改失败[${msg}(${code})]`,
+                            icon: 'none'
+                        })
+                    }
+                }
+            }
+
+            this.isModify = !this.isModify
         }
     }
 }
